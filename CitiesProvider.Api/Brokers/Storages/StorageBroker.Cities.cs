@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CitiesProvider.Api.Brokers.Storages
@@ -18,17 +19,28 @@ namespace CitiesProvider.Api.Brokers.Storages
             return cityEntityEntry.Entity;
         }
 
-        public async ValueTask<List<City>> GetAllCities()
+        public  IQueryable<City> SelectAllCities() => this.Cities;
+
+        public async ValueTask<City> UpdateCityAsync(City city)
         {
-            var cities = new List<City>()
-            {
-               new City() {State = "Florida", Name = "Jacksonville", Longitude = 3.0, Latitude =  9.3, Id = Guid.NewGuid() },
-               new City() {State = "Georgia", Name = "Atlanta", Longitude = 2.0, Latitude =  8.3, Id = Guid.NewGuid() },
+            EntityEntry<City> aCity = this.Cities.Update(city);
+            await this.SaveChangesAsync();
 
-            };
-            return cities;
+            return aCity.Entity; 
+        }
+
+        public async ValueTask<City> SelectCityByIdAsync(Guid id)
+        {
+            return await this.Cities.FindAsync(id);
+        }
 
 
+        
+        public async ValueTask<City> DeleteCityAsync(City city)
+        {
+            EntityEntry<City> cityEntityEntry = this.Cities.Remove(city);
+            await this.SaveChangesAsync();
+            return cityEntityEntry.Entity;
         }
     }
 }

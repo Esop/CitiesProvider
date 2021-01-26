@@ -2,6 +2,7 @@
 using CitiesProvider.Api.Models.Cities;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CitiesProvider.Api.Controllers
@@ -18,7 +19,7 @@ namespace CitiesProvider.Api.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<City>> GetCityAsync()
+        public async ValueTask<IQueryable<City>> GetCity()
         {
             City city = new City()
             {
@@ -32,5 +33,15 @@ namespace CitiesProvider.Api.Controllers
             var storageCity = await this.storageBroker.InsertCityAsync(city);
             return Ok(storageCity);
         }
+        [HttpGet("cities")]
+        public ActionResult<IQueryable<City>> GetAllCities()
+        {
+            var data = this.storageBroker.SelectAllCities();
+            return Ok(data);
+        }
+
+        
+    
     }
+    
 }
